@@ -29,8 +29,8 @@ echo "Single Failure Scenario"
 echo "============================"
 if [ $verbose -eq 0 ]; then
 	make clean > /dev/null
-	make > /dev/null
-	./Application testcases/singlefailure.conf > /dev/null
+	make 1> /dev/null 2> /dev/null   
+	./Application testcases/singlefailure.conf > /dev/null 
 else
 	make clean
 	make
@@ -78,7 +78,7 @@ echo "Multi Failure Scenario"
 echo "============================"
 if [ $verbose -eq 0 ]; then
 	make clean > /dev/null
-	make > /dev/null
+	make 1> /dev/null 2> /dev/null   
 	./Application testcases/multifailure.conf > /dev/null
 else
 	make clean
@@ -141,7 +141,7 @@ echo "Message Drop Single Failure Scenario"
 echo "============================"
 if [ $verbose -eq 0 ]; then
 	make clean > /dev/null
-	make > /dev/null
+	make 1> /dev/null 2> /dev/null   
 	./Application testcases/msgdropsinglefailure.conf > /dev/null
 else
 	make clean
@@ -187,3 +187,48 @@ fi
 #fi
 #echo "============================================"
 echo Final grade $grade
+echo "============================================"
+echo "Hard Senario Scenario"
+echo "============================"
+if [ $verbose -eq 0 ]; then
+	make clean > /dev/null
+	make 1> /dev/null 2> /dev/null   
+	./Application testcases/hard.conf > /dev/null
+else
+	make clean
+	make
+	./Application testcases/hard.conf
+fi
+joincount=`grep joined dbg.log | cut -d" " -f2,4-7 | sort -u | wc -l`
+if [ $joincount -eq 2500 ]; then
+	grade=`expr $grade + 10`
+	echo "Checking Join..................10/10"
+else
+	joinfrom=`grep joined dbg.log | cut -d" " -f2 | sort -u`
+	cnt=0
+	for i in $joinfrom
+	do
+		jointo=`grep joined dbg.log | grep '^ '$i | cut -d" " -f4-7 | grep -v '. '$i | sort -u | wc -l`
+		if [ $jointo -eq 49 ]; then
+			cnt=`expr $cnt + 1`
+		fi
+	done
+	if [ $cnt -eq 50 ]; then
+		grade=`expr $grade + 10`
+		echo "Checking Join..................50/50"
+	else
+		echo "Checking Join..................$cnt/50"
+	fi
+fi
+failednode=`grep "Node failed at time" dbg.log | sort -u | awk '{print $1}'`
+tmp=0
+cnt=0
+for i in $failednode
+do
+	failcount=`grep removed dbg.log | sort -u | grep ". $i" | wc -l`
+	if [ $failcount -ge 25 ]; then
+		tmp=`expr $tmp + 2`
+		grade=`expr $grade + 2`
+	fi
+done
+echo "Checking Completeness..........$tmp/50"
