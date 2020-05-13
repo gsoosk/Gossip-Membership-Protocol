@@ -1,6 +1,6 @@
 # Gossip Membership Protocol
 
-This repository contains first computer programming assignment of [Courseras Cloud Computing Course](https://www.coursera.org/learn/cloud-computing/) which is implementation of a membership protocol. I implemented gossip membership protocol which discussed in the course. 
+This repository contains first computer programming assignment of [Coursera's Cloud Computing Course](https://www.coursera.org/learn/cloud-computing/) which is implementation of a membership protocol. I implemented gossip membership protocol which discussed in the course. 
 
 __For documentation of code and 3 layers design refer to `mp1_specifications.pdf`__
 
